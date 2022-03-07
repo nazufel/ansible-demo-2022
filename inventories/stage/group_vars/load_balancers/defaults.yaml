@@ -5,7 +5,7 @@
 
 # define backend servers for the nginx.conf file templating
 backend_servers:
-  - "web_03"
-  - "web_04"
+  - "web_01"
+  - "web_02"
 ...
 #EOF

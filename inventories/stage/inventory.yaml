@@ -10,12 +10,12 @@ all:
     # group to hold load balancers
     load_balancers:
       hosts:
-        lb_02:
+        lb_01:
     # group to hold web servers
     web:
       hosts:
-        web_03:
-        web_04:
+        web_01:
+        web_02:
   
   # vars can be passed in the inventory file as well. Usually, vars here are reserved
   # for making connections to inventory hosts. Any target configurations will go into

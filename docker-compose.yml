@@ -32,6 +32,18 @@ services:
     ports:
       - "8080:80"
 
+  # lb service is the http proxy into the network
+  lb_02:
+    command: ["/usr/sbin/sshd","-D"]
+    container_name: "lb_02"
+    image: "ansible-demo:latest"
+    networks:
+      demo:
+        aliases:
+          - "lb"
+    ports:
+      - "8081:80"
+
   # webserver 01
   web_01:
     command: ["/usr/sbin/sshd","-D"]

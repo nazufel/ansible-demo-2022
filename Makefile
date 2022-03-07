@@ -18,7 +18,7 @@ down:
 
 exec:
 	$(clean_command)
-	docker-compose exec controller bash
+	docker-compose exec controller /bin/bash
 
 ps:
 	$(clean_command)

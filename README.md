@@ -1,4 +1,4 @@
-# Ansible Introduction Demo 05-14-2021
+# Ansible Introduction Demo
 
 This is the readme for the [Ansible](https://docs.ansible.com/) Demo that happened on 05-14-2021 during the Engineering Open Discussions Meeting. 
 

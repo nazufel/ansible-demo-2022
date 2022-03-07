@@ -1,0 +1,9 @@
+# defaults.yaml
+
+# file to hold defaults across all hosts and groups
+
+---
+common_apt_packages:
+  - "nginx"
+...
+#EOF
