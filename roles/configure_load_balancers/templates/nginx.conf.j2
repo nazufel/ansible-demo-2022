@@ -24,7 +24,7 @@ http {
 
   upstream backend {
     random two;
-{% for item in backend_servers %}
+{% for item in groups['web'] %}
     server {{ item }};
 {% endfor %}
   }
