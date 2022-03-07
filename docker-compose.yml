@@ -1,38 +1,74 @@
+# docker-compose.yaml
+
+# docker-compose.yaml file defines the services to be ran as part of the
+# compose - https://docs.docker.com/compose/compose-file/compose-file-v3/
+
+---
+# define the version of docker compose syntax
 version: "3.9"
 
 # define demo infrastructure
 services:
 
-  # controller service holds ansible
+  # controller container holds ansible
   controller:
+    # build a docker image when compose is invoked
     build:
+      # if a build cache for ubuntu:20.04 exists,
+      # then use that to save time
       cache_from:
         - "ubuntu:20.04"
+      # the directory where the dockerfile exists
+      # to execute the build context
       context: .
+      # the location of the dockerfile to build
       dockerfile: "./dockerfile"
+    # the command to run when the container is executed
+    # this command will start the container's ssh server
+    # so ansible has something to talk to
     command: ["/usr/sbin/sshd","-D"]
+    # name the container for service discovery as well
+    # as this will be the name output from `docker compose ps`
     container_name: "controller"
+    # name the image created from the build step above
     image: "ansible-demo"
+    # attach the running container to the below network(s)
     networks:
+      # put the container in the network named "demo"
+      # this network is defined below
       demo:
+        # set up service discovery in the network to reference
+        # this container by the name "controller"
         aliases:
           - "controller"
+    # attach any volumes inside of the container. This is
+    # done so that ansible files on the host system
+    # can be accessed from within the controller container
+    # since ansible will be ran from here becuase it
+    # will be on the same docker network as the other 
+    # containers being orchestrated and demonstrated.
     volumes:
         - "./:/root/ansible"
 
-  # lb service is the http proxy into the network
+  # load balancer container named "lb_01"
   lb_01:
     command: ["/usr/sbin/sshd","-D"]
     container_name: "lb_01"
+    # use the image built by the build step 
+    # for the controller container above
     image: "ansible-demo:latest"
     networks:
       demo:
         aliases:
           - "lb"
+    # open up ports in the container to allow access
+    # from outside of the docker network inside.
+    # taffic on port 8080, the container will directed
+    # to port 80 inside the container
     ports:
       - "8080:80"
 
-  # lb service is the http proxy into the network
+  # load balancer container named "lb_02"
   lb_02:
     command: ["/usr/sbin/sshd","-D"]
     container_name: "lb_02"
@@ -44,7 +80,7 @@ services:
     ports:
       - "8081:80"
 
-  # webserver 01
+  # webserver container named "web_01"
   web_01:
     command: ["/usr/sbin/sshd","-D"]
     container_name: "web_01"
@@ -54,7 +90,7 @@ services:
         aliases:
           - "web_01"
 
-  # webserver 02
+  # webserver container named "web_02"
   web_02:
     command: ["/usr/sbin/sshd","-D"]
     container_name: "web_02"
@@ -64,7 +100,7 @@ services:
         aliases:
           - "web_02"
 
-  # webserver 03
+  # webserver container named "web_03"
   web_03:
     command: ["/usr/sbin/sshd","-D"]
     container_name: "web_03"
@@ -74,7 +110,7 @@ services:
         aliases:
           - "web_03"
 
-  # webserver 04
+  # webserver container named "web_04"
   web_04:
     command: ["/usr/sbin/sshd","-D"]
     container_name: "web_04"
@@ -84,5 +120,9 @@ services:
         aliases:
           - "web_04"
 
+# create a network to attach all of the running
+# containers to and name it "demo"
 networks:
   demo:
+...
+#EOF

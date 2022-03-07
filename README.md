@@ -1,63 +1,73 @@
 # Ansible Introduction Demo
 
-This is the readme for the [Ansible](https://docs.ansible.com/) Demo that happened on 05-14-2021 during the Engineering Open Discussions Meeting. 
-
-Here is the format:
-
-* Show the [docker-compose](./docker-compose.yaml) file and go over the infrastructure diagram in this document and build the infrastructure.
-* Run the [curl](curl.sh) test script to show there's no funny business
-* While the infrastructure spins up (it takes a few minutes) go over Ansible at a high level
-    * Ansible is a configuration management and orchestration tool
-    * Ansible is a combination of a declaritive and procedural API
-        * Delclaritive modules
-        * Excuted in a procedural order
-    * Ansible uses a combination of primitives to make a robust and pluggable system
-* Explain the primitives
-    * Playbooks
-    * Plays
-    * Roles
-    * Tasks
-    * Inventories
-    * Variables
-    * Secrets
-* Run the first part of the demo where the infrastructure is configured and v1 of the app is deployed
-* Update v2 taking suggestions from the viewers as to what the "payload" should be and deploy
-* Questions
+This is the readme for the [Ansible](https://docs.ansible.com/) Introduction Demo
 
 Throughout the demo a [Makefile](./Makefile) will be used to shorten complex commands and make things easier.
 
-## Show Compose File and Build Infrastructure
+This demonstration is not meant to be exhaustive on Ansible. It will demonstrate Ansible and link to sources of documentation where a deeper dive could be relavant. Demo objectives:
 
-The infrastructure for this demo is created using [docker-compose](https://docs.docker.com/compose/) to simplify complex infrastructure defined in a [ docker-compose.yaml](./docker-compose.yaml). This is a demo and should not be used for production. The [Compose](https://docs.docker.com/compose/compose-file/compose-file-v3/) file builds a [Docker](https://www.docker.com/get-started) [image](https://docs.docker.com/engine/reference/commandline/image/).
+* describe ansible primitives:
+    - tasks
+    - roles
+    - plays
+    - playbooks
+    - inventories
+    - inventory groups
+    - variables
+    - secrets
+* deploy and test and application to a mock Stage and then Production
+* demonstrate calling the same playbook with a different inventory will acheive different results
 
-To build and start the infrastructure use the make command:
+## Requirements
+
+* [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
+* [Docker](https://www.docker.com/products/docker-desktop)
+* [Docker Compose V2](https://docs.docker.com/compose/)
+* [Make](https://www.gnu.org/software/make/)
+
+## Compose File and Build Infrastructure
+
+The infrastructure for this demo must first be created using Docker Compose [V2](https://docs.docker.com/compose/cli-command/) to simplify complex infrastructure defined in a [ docker-compose.yaml](./docker-compose.yaml). This is a demo and should not be used for production. The Compose file builds a Docker [image](https://docs.docker.com/engine/reference/commandline/image/) and stands up various containers that will simulate a Stage and Production environments.
+
+To build and start the infrastructure use the `make` command:
 
 ```sh
 make build
 ```
 
-This will instruct docker-compose to build the included [dockerfile](./dockerfile) once and then spin up six [containers](https://www.docker.com/resources/what-container) based on that file with aliases, secrets, networking, mounted volumes, and a running ssh server for this demo. Below is the running infrastructure after running `make ps`.
+This will instruct Docker Compose to build the included [dockerfile](./dockerfile) once and then spin up six [containers](https://www.docker.com/resources/what-container) based on that file with aliases, secrets, networking, mounted volumes, and a running ssh server for this demo. This step will take a few minutes. Take the time to go through the following files being used to set up this infrastructure. They are commented and links are provided for the different sections 
+
+* [dockerfile](./dockerfile) - a [Dockerfile](https://docs.docker.com/engine/reference/builder/) defines the series of steps required to build a Docker [Image](https://docs.docker.com/engine/reference/commandline/image/) that can later be ran as a Docker [Container](https://www.docker.com/resources/what-container) (probably in [Kubernetes](https://kubernetes.io/docs/home/) or [Knative](https://knative.dev/docs/)). The built Docker Image in this demo will be ran with Docker Compose.
+* [docker-compose.yaml](./docker-compose.yml) - a Docker Compose file defines which Docker Images to run as well as it set up various other pieces such as volumes, networking, service discovery, and more. (Docker Compose is not Production ready, but will suffice for this demo. For Production container orchestration see [Kubernetes](https://kubernetes.io/docs/home/) or [Knative](https://knative.dev/docs/))
+
+
+Below is the running infrastructure after running `make ps`.
 
 ```sh
+make ps
+
 docker-compose ps
-   Name           Command        State                  Ports                
------------------------------------------------------------------------------
-controller   /usr/sbin/sshd -D   Up                                          
-lb_01        /usr/sbin/sshd -D   Up      0.0.0.0:8080->80/tcp,:::8080->80/tcp
-web_01       /usr/sbin/sshd -D   Up                                          
-web_02       /usr/sbin/sshd -D   Up                                          
-web_03       /usr/sbin/sshd -D   Up                                          
+   Name           Command        State          Ports        
+-------------------------------------------------------------
+controller   /usr/sbin/sshd -D   Up                          
+lb_01        /usr/sbin/sshd -D   Up      0.0.0.0:8080->80/tcp
+lb_02        /usr/sbin/sshd -D   Up      0.0.0.0:8081->80/tcp
+web_01       /usr/sbin/sshd -D   Up                          
+web_02       /usr/sbin/sshd -D   Up                          
+web_03       /usr/sbin/sshd -D   Up                          
 web_04       /usr/sbin/sshd -D   Up                                          
 ```
 
-There should be six containers.
+There should be seven containers.
 | name | purpose |
 | --- | --- |
 | controller | This is the container the demo will be running any ansible commands and Playbooks from since it will be part of the docker networking and to just make things easier. This container also has a volume mounted from the demo system into the container at `/root/ansible` where the Ansible files will be accssed from. |
-| lb_01 | This container is [load balancer ](https://www.citrix.com/solutions/app-delivery-and-security/load-balancing/what-is-load-balancing.html#:~:text=Load%20balancing%20is%20defined%20as,server%20capable%20of%20fulfilling%20them.) for the demo and it will proxy traffic to the web servers. Notice, it is the only one with port forwarding set up. The only way to access the web servers is through this container. | 
-| web_0* | These containers are web servers that will serve up the demo application. The only way to access these containers is through the *lb_01* load balancer. |
+| lb_01 | This container is [load balancer ](https://www.citrix.com/solutions/app-delivery-and-security/load-balancing/what-is-load-balancing.html#:~:text=Load%20balancing%20is%20defined%20as,server%20capable%20of%20fulfilling%20them.) for the demo and it will proxy traffic to the web servers for the simulated Stage environment. Notice, it is the only one with port forwarding set up. The only way to access the web servers is through this container. | 
+| lb_01 | This container is [load balancer ](https://www.citrix.com/solutions/app-delivery-and-security/load-balancing/what-is-load-balancing.html#:~:text=Load%20balancing%20is%20defined%20as,server%20capable%20of%20fulfilling%20them.) for the demo and it will proxy traffic to the web servers for the simulated Production environment. Notice, it is the only one with port forwarding set up. The only way to access the web servers is through this container. | 
+| web_01-02 | These containers are web servers that will serve up the demo application for the Stage environment. The only way to access these containers is through the *lb_01* load balancer. |
+| web_03-04 | These containers are web servers that will serve up the demo application for the Production environment. The only way to access these containers is through the *lb_02* load balancer. |
 
-The infrastructure has been set up. There is nothing else to build. 
+The infrastructure has been set up. There is nothing else to build.
 
 ## Run the Curl Test Script
 
