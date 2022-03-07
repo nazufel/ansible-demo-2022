@@ -1,0 +1,24 @@
+# setup_app.yaml
+
+# tasks to setup the app
+
+---
+- name: "template nginx config"
+  ansible.builtin.template:
+    dest: "/etc/nginx/nginx.conf"
+    group: "root"
+    mode: 0644
+    owner: "root"
+    src: "nginx.conf.j2"
+
+- name: "create directories"
+  ansible.builtin.file:
+    group: "www-data"
+    owner: "www-data"
+    path: "/var/{{ item }}"
+    state: "directory"
+  loop:
+    - "www"
+    - "www/demo"
+...
+#EOF

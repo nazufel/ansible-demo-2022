@@ -1,0 +1,9 @@
+# .ignore
+
+# define files and directories for git to ignore.
+
+
+.ansible
+.bash_history
+.ssh
+#EOF

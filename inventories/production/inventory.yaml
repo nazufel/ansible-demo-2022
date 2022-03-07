@@ -1,0 +1,31 @@
+# inventory.yaml
+
+# inventory file for the service level
+
+# Inventory reference - https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html
+
+# all group holds all host and child groups
+all:
+  children:
+    # group to hold load balancers
+    load_balancers:
+      hosts:
+        lb_01:
+    # group to hold web servers
+    web:
+      hosts:
+        web_01:
+        web_02:
+        web_03:
+        web_04:
+  
+  # vars can be passed in the inventory file as well. Usually, vars here are reserved
+  # for making connections to inventory hosts. Any target configurations will go into
+  # their respective group_vars and host_vars files. Don't put inventory target 
+  # configurations here.
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+    ansible_user: "root"
+    ansible_python_interpreter: "/usr/bin/python3"
+    # ssh key created in the dockerfile
+    ansible_ssh_private_key_file: "/root/.ssh/ansible_demo"

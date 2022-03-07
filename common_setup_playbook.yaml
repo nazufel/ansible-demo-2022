@@ -1,0 +1,60 @@
+# common_setup_playbook.yaml
+
+# playbook file to hold plays about common setup
+
+---
+
+#####################################################
+### play 00 - run a play against all hosts/groups ###
+#####################################################
+
+  # name the play
+- name: "common setup play"
+  # specify which hosts or groups to target
+  hosts: "all"
+  # specify if ansible should gather facts: reference - https://docs.ansible.com/ansible/latest/user_guide/playbooks_vars_facts.html
+  gather_facts: true
+
+  # list of tasks to perform as part of the playbook
+  tasks:
+      # task that uses the ansible.builtin.apt module to install packages using the apt package manager - https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+    - name: "update all packages to their latest version"
+      ansible.builtin.apt:
+        name: "*"
+        state: "latest"
+
+    - name: "update apt cache"
+      ansible.builtin.apt:
+        update_cache: true
+
+      # use the ansible.builtin.apt module to install specific pakages. the packages are defined in the group_vars/all/defaults.yaml 
+      # file of the inventory being called.
+    - name: "install common packages"
+      ansible.builtin.apt:
+        # variable sourced form the inventories/production/group_vars/all/defaults.yaml variables file
+        pkg: "{{ common_apt_packages }}"
+        state: "present"
+
+################################################
+### play 01 - run a play against web servers ###
+################################################
+
+- name: "web server setup"
+  hosts: "web"
+  gather_facts: true
+
+  roles:
+    - name: "deploy_app"
+
+######################################################
+### play 02 - run a play against the load balaners ###
+######################################################
+
+- name: "load balancer setup"
+  hosts: "load_balancers"
+  gather_facts: true
+
+  roles:
+    - name: "configure_load_balancers"
+...
+#EOF

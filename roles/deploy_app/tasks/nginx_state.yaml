@@ -1,0 +1,29 @@
+# nginx_state.yaml
+
+# tasks to control the state of nginx
+
+---
+  # check to see if nginx is running by using the ansible.builtin.stat module (https://docs.ansible.com/ansible/latest/collections/ansible/builtin/stat_module.html)
+  # this module returns values that are grabbed by the "register" argument and saved to the variable specified. Then that variable can be used in
+  # future logic of the role.
+- name: "check to see if nginx is running"
+  ansible.builtin.stat:
+    path: "/run/nginx.pid"
+  register: nginx_pid
+
+# note about the below tasks: 
+# normally, you would use the ansible.builtin.systemd module (https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html)
+# to start and stop services such as nginx rather than the command module (https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html). 
+# However, since the Inventory targets for this playbook are containers and not actual servers, there is no systemd and therefore we need to use the cli commands.
+
+  # send nginx the start command if the previous task did not find the pid file, which means nginx is running
+- name: "start nginx"
+  ansible.builtin.command: "nginx"
+  when: not nginx_pid.stat.exists
+
+  # send nginx the reload command since the above task found the pid file and nginx is already running
+- name: "restart nginx"
+  ansible.builtin.command: "nginx -s reload"
+  when: nginx_pid.stat.exists
+...
+#EOF

@@ -1,0 +1,12 @@
+# main.yaml
+
+# main file holds tasks for the role
+
+---
+# import_tasks individual task files
+- import_tasks: "setup_app.yaml"
+- import_tasks: "copy_app_files.yaml"
+- import_tasks: "nginx_state.yaml"
+- import_tasks: "test_app.yaml"
+...
+#EOF

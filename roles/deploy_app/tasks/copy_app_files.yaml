@@ -1,0 +1,13 @@
+# copy_app_files.yaml
+
+# tasks to copy files
+
+---
+- name: "deploy app"
+  ansible.builtin.template:
+    dest: "/var/www/demo/app.json"
+    group: "www-data"
+    owner: "www-data"
+    src: "app.json.j2"
+...
+#EOF

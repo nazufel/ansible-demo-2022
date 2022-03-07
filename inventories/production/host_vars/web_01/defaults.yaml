@@ -1,0 +1,8 @@
+# defaults.yaml
+
+# file to hold default values for this host
+
+---
+host_id: "{{ 1000 | random }}"
+...
+#EOF

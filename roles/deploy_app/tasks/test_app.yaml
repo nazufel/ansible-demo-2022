@@ -1,0 +1,17 @@
+# test_app.yaml
+
+# tasks to test the app
+
+---
+- name: "test the app"
+  ansible.builtin.uri:
+    body_format: "json"
+    return_content: true
+    url: "http://127.0.0.1"
+  register: app_content
+
+- name: "print app test output"
+  ansible.builtin.debug:
+    msg: "{{ app_content.content }}"
+...
+#EOF

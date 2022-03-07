@@ -1,0 +1,110 @@
+# deploy_app.yaml
+
+# playbook of plays to deploy the app
+
+---
+
+#####################################################################
+### play 00 - pull half of the web servers from the load balancer ###
+#####################################################################
+- name: "pull first half"
+  hosts: "load_balancers"
+  gather_facts: true
+
+  vars:
+    backend_servers:
+      - "web_03"
+      - "web_04"
+
+  roles:
+    - name: "configure_load_balancers"
+
+  # pre_tasks are executed before roles, no matter where they are in the file. only post_tasks 
+  # are executed after roles - https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html?#using-roles
+  pre_tasks:
+    - name: "pause"
+      ansible.builtin.pause:
+        echo: false
+        prompt: "verify all webservers are available."
+
+  post_tasks:
+    - name: "pause"
+      ansible.builtin.pause:
+        echo: false
+        prompt: "verify the only servers available now are web_03 and web_04"
+
+############################################################
+### play 01 - deploy application to inactive web servers ###
+############################################################
+- name: "deploy app inactive servers"
+  hosts: "web[0:1]"
+  gather_facts: true
+
+  vars:
+    app_payload: "Darth Bane was the best Sith Lord."
+    app_version: "v1.1"
+
+  roles:
+    - name: "deploy_app"
+
+  post_tasks:
+    - name: "pause"
+      ansible.builtin.pause:
+        echo: false
+        prompt: "new app is deployed, but not live."
+
+##############################################################
+### play 02 - replace updated servers in the load balancer ###
+###           and remove the previous active servers       ###
+##############################################################
+- name: "flip the farm"
+  hosts: "load_balancers"
+  gather_facts: true
+
+  roles:
+    - name: "configure_load_balancers"
+      # injecting variables directly into the role rather than letting them
+      # be scoped to the playbook
+      vars:
+        backend_servers:
+          - "web_01"
+          - "web_02"
+
+  post_tasks:
+    - name: "pause"
+      ansible.builtin.pause:
+        echo: false
+        prompt: "new app is live only on updated servers."
+
+######################################################################
+### play 04 - deploy application to the second half of web servers ###
+######################################################################
+- name: "deploy app to inactive servers"
+  hosts: "web[2:3]"
+  gather_facts: true
+
+  vars:
+    app_payload: "Darth Bane was the best Sith Lord."
+    app_version: "v1.1"
+
+  roles:
+    - name: "deploy_app"
+
+#############################################################
+### play 05 - put all servers back into the load balancer ###
+#############################################################
+- name: "replace all servers"
+  hosts: "load_balancers"
+  gather_facts: true
+
+  vars:
+    backend_servers:
+      - "web_01"
+      - "web_01"
+      - "web_03"
+      - "web_04"
+
+  roles:
+    - name: "configure_load_balancers"
+...
+#EOF

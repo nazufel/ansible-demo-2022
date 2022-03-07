@@ -1,0 +1,76 @@
+version: "3.9"
+
+# define demo infrastructure
+services:
+
+  # controller service holds ansible
+  controller:
+    build:
+      cache_from:
+        - "ubuntu:20.04"
+      context: .
+      dockerfile: "./dockerfile"
+    command: ["/usr/sbin/sshd","-D"]
+    container_name: "controller"
+    image: "ansible-demo"
+    networks:
+      demo:
+        aliases:
+          - "controller"
+    volumes:
+        - "./:/root/ansible"
+
+  # lb service is the http proxy into the network
+  lb_01:
+    command: ["/usr/sbin/sshd","-D"]
+    container_name: "lb_01"
+    image: "ansible-demo:latest"
+    networks:
+      demo:
+        aliases:
+          - "lb"
+    ports:
+      - "8080:80"
+
+  # webserver 01
+  web_01:
+    command: ["/usr/sbin/sshd","-D"]
+    container_name: "web_01"
+    image: "ansible-demo:latest"
+    networks:
+      demo:
+        aliases:
+          - "web_01"
+
+  # webserver 02
+  web_02:
+    command: ["/usr/sbin/sshd","-D"]
+    container_name: "web_02"
+    image: "ansible-demo:latest"
+    networks:
+      demo:
+        aliases:
+          - "web_02"
+
+  # webserver 03
+  web_03:
+    command: ["/usr/sbin/sshd","-D"]
+    container_name: "web_03"
+    image: "ansible-demo:latest"
+    networks:
+      demo:
+        aliases:
+          - "web_03"
+
+  # webserver 04
+  web_04:
+    command: ["/usr/sbin/sshd","-D"]
+    container_name: "web_04"
+    image: "ansible-demo:latest"
+    networks:
+      demo:
+        aliases:
+          - "web_04"
+
+networks:
+  demo:

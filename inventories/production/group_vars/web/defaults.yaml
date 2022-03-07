@@ -1,0 +1,14 @@
+# defaults.yaml
+
+# file to hold default vars for the group. these values can be overridden.
+
+---
+
+# variables to be templated in files
+app_payload: "Matt Smith was the best Doctor."
+app_service_level: "production"
+app_version: "v1"
+
+host_id: "zyxw"
+...
+#EOF
