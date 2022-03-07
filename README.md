@@ -106,7 +106,6 @@ This task creates a file in the specified path, with specified ownership, and wi
 
  Ansible Tasks can be oranized into [Roles](https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html) (and also into Plays, more on Plays later). Roles provide self-contained and resuable chunks of configuration that can be called from different parts of the Ansible system. Read the provided link for more information. 
 
- Note about using Roles at Martin. The [CODEOWNERS](../../../CODEOWNERS) for the [ansible](../../../infra/ansible) configurations in this repo have strict guidelines for when to use Roles. Read the Ansible [CONTRIBUTING](../../../infra/ansible/CONTRIBUTING.md#when-to-use-roles) document about when to Roles. 
 
 ### Plays
 

@@ -9,6 +9,6 @@ app_payload: "Matt Smith was the best Doctor."
 app_service_level: "stage"
 app_version: "v1"
 
-host_id: "zyxw"
+host_id: "abcd"
 ...
 #EOF
