@@ -24,10 +24,17 @@ http {
 
   upstream backend {
     random two;
+{% if backend_servers is defined %}
+{% for item in backend_servers %}
+    server {{ item }};
+{% endfor %}
+{% else %}
 {% for item in groups['web'] %}
     server {{ item }};
 {% endfor %}
-  }
+{% endif %}
+
+}
 
 server {
   location / {

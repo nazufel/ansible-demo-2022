@@ -31,7 +31,7 @@
     - name: "pause"
       ansible.builtin.pause:
         echo: false
-        prompt: "verify the only servers available now are web_03 and web_04"
+        prompt: "verify the only one server is responding to traffic"
 
 ############################################################
 ### play 01 - deploy application to inactive web servers ###
