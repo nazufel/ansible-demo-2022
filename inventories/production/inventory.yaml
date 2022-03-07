@@ -13,9 +13,13 @@ all:
         lb_02:
     # group to hold web servers
     web:
-      hosts:
-        web_03:
-        web_04:
+      children:
+        group_a:
+          hosts:
+            web_03:
+        group_b:
+          hosts:
+            web_04:
   
   # vars can be passed in the inventory file as well. Usually, vars here are reserved
   # for making connections to inventory hosts. Any target configurations will go into

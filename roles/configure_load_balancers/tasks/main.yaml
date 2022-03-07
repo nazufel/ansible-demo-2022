@@ -30,7 +30,7 @@
   when: not nginx_pid.stat.exists
 
   # send nginx the reload command since the above task found the pid file and nginx is already running
-- name: "restart nginx"
+- name: "reload nginx"
   ansible.builtin.command: "nginx -s reload"
   when: nginx_pid.stat.exists
 ...
