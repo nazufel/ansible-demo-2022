@@ -69,6 +69,7 @@ There should be seven containers.
 
 The infrastructure has been set up. There is nothing else to build.
 
+<!-- TODO: stopped here -->
 ## Run the Curl Test Script
 
 There is a [script](./curl.sh) in the demo directory that runs [curl](https://curl.se/) on a loop in half-second intervals. This script and the printed output will be client for accessing the demo application. Go ahead and run the script using the make command:
