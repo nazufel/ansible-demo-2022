@@ -14,10 +14,10 @@ all:
     # group to hold web servers
     web:
       children:
-        group_a:
+        blue:
           hosts:
             web_03:
-        group_b:
+        green:
           hosts:
             web_04:
   

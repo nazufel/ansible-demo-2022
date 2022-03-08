@@ -39,8 +39,8 @@
 ### play 01 - run a play against web servers ###
 ################################################
 
-- name: "web server setup"
-  hosts: "web"
+- name: "deploy blue app"
+  hosts: "blue"
   gather_facts: true
 
   roles:
@@ -56,5 +56,7 @@
 
   roles:
     - name: "configure_load_balancers"
+      vars:
+        backend_servers: "{{ groups['blue'] }}"
 ...
 #EOF

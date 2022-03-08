@@ -1,0 +1,43 @@
+# deploy_blue.yaml
+
+# playbook of plays to deploy the app to blue servers
+
+---
+
+############################################################
+### play 00 - deploy application to inactive web servers ###
+############################################################
+- name: "deploy app to inactive blue servers"
+  hosts: "blue"
+  gather_facts: true
+
+  # "update" the application
+  vars:
+    app_payload: "Darth Bane was the best Sith Lord."
+    app_version: "v1.1"
+
+  roles:
+    - name: "deploy_app"
+
+  post_tasks:
+    - name: "pause"
+      ansible.builtin.pause:
+        echo: false
+        prompt: "new app is deployed, but not live. check that output above is correct (QA steps)"
+
+##############################################################
+### play 01 - replace updated servers in the load balancer ###
+##############################################################
+- name: "flip the farm"
+  hosts: "load_balancers"
+  gather_facts: true
+
+  pre_tasks:
+    - name: "define server(s) to leave in the loadbalancer"
+      ansible.builtin.set_fact:
+        backend_servers: "{{ groups['blue'] }}"
+
+  roles:
+    - name: "configure_load_balancers"
+...
+#EOF
