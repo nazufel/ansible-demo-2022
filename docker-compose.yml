@@ -120,6 +120,46 @@ services:
         aliases:
           - "web_04"
 
+  # webserver container named "web_05"
+  web_05:
+    command: ["/usr/sbin/sshd","-D"]
+    container_name: "web_05"
+    image: "ansible-demo:latest"
+    networks:
+      demo:
+        aliases:
+          - "web_01"
+
+  # webserver container named "web_06"
+  web_06:
+    command: ["/usr/sbin/sshd","-D"]
+    container_name: "web_06"
+    image: "ansible-demo:latest"
+    networks:
+      demo:
+        aliases:
+          - "web_06"
+
+  # webserver container named "web_07"
+  web_07:
+    command: ["/usr/sbin/sshd","-D"]
+    container_name: "web_07"
+    image: "ansible-demo:latest"
+    networks:
+      demo:
+        aliases:
+          - "web_07"
+
+  # webserver container named "web_8"
+  web_08:
+    command: ["/usr/sbin/sshd","-D"]
+    container_name: "web_08"
+    image: "ansible-demo:latest"
+    networks:
+      demo:
+        aliases:
+          - "web_08"
+
 # create a network to attach all of the running
 # containers to and name it "demo"
 networks:

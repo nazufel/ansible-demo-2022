@@ -17,9 +17,11 @@ all:
         blue:
           hosts:
             web_01:
+            web_02:
         green:
           hosts:
-            web_02:
+            web_03:
+            web_04:
   
   # vars can be passed in the inventory file as well. Usually, vars here are reserved
   # for making connections to inventory hosts. Any target configurations will go into
