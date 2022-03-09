@@ -14,6 +14,8 @@ This demonstration is not meant to be exhaustive on Ansible. It will demonstrate
     - inventories
     - inventory groups
     - variables
+        - group
+        - host
     - secrets
 * deploy and test and application to a mock Stage and then Production
 * demonstrate calling the same playbook with a different inventory will acheive different results
